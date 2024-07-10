@@ -1,0 +1,10 @@
+﻿@page
+@using WebAppFirst.Components
+@model IndexModel
+@{
+    ViewData["Title"] = "File System";
+}
+
+@(await Html.RenderComponentAsync<FileContent>(RenderMode.ServerPrerendered))
+
+<script src="_framework/blazor.server.js"></script>

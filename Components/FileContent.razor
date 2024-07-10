@@ -1,0 +1,53 @@
+﻿@using System.Web
+@using WebAppFirst.Models
+@using WebAppFirst.Services
+@using Microsoft.AspNetCore.Components.Web
+@inject FileSystemService FileSystemService
+@inject NavigationManager Navigator
+
+@if (CurrentFolder.HasUpperDirectory)
+{
+    var upperDirectory = CurrentFolder.UpperDirectory;
+    <button @onclick="() => UpdateCurrentFolder(upperDirectory)"> Back to @upperDirectory.Name </button>
+}
+
+<h2> @CurrentFolder.Name</h2>
+<h3>Directories</h3>
+<div>
+    @foreach (var innerDirectory in CurrentFolder.InnerDirectories)
+    {
+        <div>
+            <button @onclick="(e) => {UpdateCurrentFolder(innerDirectory); }">
+                @innerDirectory.Name
+            </button>
+        </div>
+    }
+</div>
+
+<h3>Files</h3>
+<div>
+    @foreach (var fileInfo in CurrentFolder.Files)
+    {
+        var path = $"FileSystem/GetFile?path={FileSystemService.EncodeUrl(fileInfo)}";
+    <div>
+        @* <a id="downloadFile" class="btn" href="@path" download="@fileInfo.Name" *@
+        @*    role="button" target="=_blank">@fileInfo.Name</a> *@
+
+        <a href=@path target="_blank" >@fileInfo.Name</a>
+    </div>
+    }
+</div>
+
+@code {
+    public BFolderInfo CurrentFolder;
+
+    protected override void OnInitialized()
+    {
+        CurrentFolder = FileSystemService.GetStartFolderInfo();
+    }
+
+    public void UpdateCurrentFolder(BInnerFolder innerFolder)
+    {
+        CurrentFolder = FileSystemService.GetFolderInfo(innerFolder.Path);
+    }
+}
