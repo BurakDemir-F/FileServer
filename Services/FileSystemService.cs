@@ -9,15 +9,22 @@ public class FileSystemService
 {
     private FileSystemProvider _fileSystemProvider;
     private BFolderInfo _startFolderInfo;
-    public FileSystemService(IWebHostEnvironment environment)
+    private IConfiguration _configuration;
+    public FileSystemService(IWebHostEnvironment environment, IConfiguration configuration)
     {
         _fileSystemProvider = new FileSystemProvider();
+        _configuration = configuration;
         _startFolderInfo = GetStartFolderInfo();
     }
 
     public BFolderInfo GetStartFolderInfo()
     {
-        var directory = Directory.GetCurrentDirectory();
+        var defaultPathConfiguration = _configuration.GetSection("StartPath");
+        if (defaultPathConfiguration == null)
+            return null;
+
+        var defaultDirectoryPath = defaultPathConfiguration.Value;
+        var directory = string.IsNullOrEmpty(defaultDirectoryPath)? Directory.GetCurrentDirectory() : defaultDirectoryPath;
         var hasFileInfo = _fileSystemProvider.TryGetFolderInfo(directory, out var fileInfo);
         fileInfo.UpperDirectory = null;
         return hasFileInfo ? fileInfo : null;

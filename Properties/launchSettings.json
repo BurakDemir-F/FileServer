@@ -14,6 +14,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "applicationUrl": "http://192.168.1.106:8000",
+      "commandLineArgs": "--path E:\\ --port 7500",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

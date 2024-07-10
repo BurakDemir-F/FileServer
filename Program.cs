@@ -1,21 +1,38 @@
 using System.Net;
 using System.Net.Sockets;
+using Cocona;
 using WebAppFirst.Services;
 
 namespace WebAppFirst;
 
 public class Program
 {
-    private const int _port = 8000;
+    private static string _port = "8000";
 
     public static void Main(string[] args)
     {
+        var builder = CoconaApp.CreateBuilder();
+        var app = builder.Build();
+
+        app.AddCommand((string path,string port) =>
+        {
+            RunNetCoreApp(args,path,port);
+        });
+
+        app.Run();
+    }
+
+    private static void RunNetCoreApp(string[] args,string path, string port)
+    {
+        _port = port;
         var builder = WebApplication.CreateBuilder(args);
         // Add services to the container.
 
         var url = GetServeUrl();
         builder.WebHost.UseUrls(url);
-
+        builder.WebHost.UseSetting("StartPath", path);
+        builder.WebHost.UseSetting("Port", port);
+        
         builder.Services.AddRazorPages();
         builder.Services.AddSingleton<FileSystemService>();
         builder.Services.AddServerSideBlazor();
@@ -42,7 +59,7 @@ public class Program
 
         app.Run();
     }
-
+    
     private static string GetServeUrl()
     {
         return $"http://{GetLocalIpAddress()}:{_port}";
